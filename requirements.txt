@@ -1,0 +1,9 @@
+# Root requirements for the whole project -- the union of backend/requirements.txt
+# and mcp_server/requirements.txt (both left unchanged). Installing this alone is
+# enough to run everything in backend/ and mcp_server/.
+pydantic-ai
+fastmcp>=2.0.0
+python-dotenv
+httpx
+fastapi
+uvicorn[standard]
