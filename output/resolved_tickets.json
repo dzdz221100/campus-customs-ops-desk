@@ -1,0 +1,68 @@
+[
+  {
+    "id": 101,
+    "type": "customer_order",
+    "final_status": "resolved",
+    "short_outcome": "Size-S Classic Bulldog Tee was out of stock (0 on hand). The linked restock invoice (#501, $840, overdue) was blocking any real timeline for the customer. Accounting verified the invoice and cash balance, got Boss's sign-off, and prepared the payment; a human approved it on the dashboard, which paid Bulldog Print Co and marked the invoice paid. On a follow-up run, Customer Service confirmed the invoice was now paid and closed the ticket, giving an honest vendor-lead-time window (5 business days) instead of a specific promised date.",
+    "agent_contributions": {
+      "boss": "Delegated the ticket to Customer Service. When Accounting asked for a sanity check on the $840 proposed payment (over the $500 self-approval threshold), re-verified the invoice, vendor, cash balance, and today's date itself, confirmed the numbers checked out, and gave the go-ahead to prepare it.",
+      "customer_service": "Pass 1: verified 0 on-hand stock for CC-TEE-WHITE/S, found invoice #501 still open/unpaid and overdue, and handed the payment question to Accounting rather than promising a date. Pass 2: re-checked the ticket, saw invoice #501 was now paid, and closed the ticket with a vendor-lead-time-based (not invented) delivery window.",
+      "accounting": "Verified invoice #501 ($840, due 2026-08-28, overdue) and the checking balance ($3,400) against the database, looped in Boss for sign-off since the amount exceeded the $500 threshold, then called propose_payment to prepare the payment for human review.",
+      "facilities": null,
+      "inventory": null
+    },
+    "human_approval": {
+      "required": true,
+      "proposal_id": 1,
+      "kind": "invoice",
+      "ref_id": 501,
+      "amount": 840.0,
+      "account": "checking",
+      "approved_by": "dashboard-operator",
+      "approved_at": "2026-10-09T23:16:58.780845+00:00"
+    },
+    "cash_impact_usd": -840.0,
+    "runs": ["run-cabac001", "run-9411ddd7"],
+    "note": "Boss's own closing summary on the first pass inaccurately claimed 'no payment was prepared' even though Accounting had just created the proposal -- verified via output/mcp_smoke-style direct API/DB checks (GET /api/payments/proposals, sqlite), not trusted from the agent's prose. See output/harness.md and the Problem 10 reflection."
+  },
+  {
+    "id": 102,
+    "type": "rent_notice",
+    "final_status": "resolved",
+    "short_outcome": "Elm City Properties' email claimed rent was due in 2 days. Facilities checked the real lease record: $2,400/month, next_due 2026-09-02, which genuinely is 2 days after the shop's date (2026-08-31) -- the notice was accurate, but rent isn't due *today*, so nothing was paid. Ticket closed as verified with no cash movement.",
+    "agent_contributions": {
+      "boss": "Delegated the ticket to Facilities; no further action needed since Facilities resolved it in one pass.",
+      "facilities": "Verified lease #1 against the landlord's notice (amount and due date both checked out), checked today's date and the checking balance for situational awareness, and closed the ticket without preparing any payment since nothing is due yet.",
+      "accounting": null,
+      "customer_service": null,
+      "inventory": null
+    },
+    "human_approval": {
+      "required": false,
+      "reason": "No payment was prepared -- rent is not due until 2026-09-02, 2 days after the shop's current date, so there was nothing for a human to approve."
+    },
+    "cash_impact_usd": 0.0,
+    "runs": ["run-99371d6f"],
+    "note": "Facilities also called get_cash_balance, a tool this run didn't strictly need (no payment was ever on the table) -- a small, harmless deviation from the Problem 6 prediction, flagged for the Problem 10 reflection rather than hidden."
+  },
+  {
+    "id": 103,
+    "type": "price_override",
+    "final_status": "needs_approval",
+    "short_outcome": "Yale AI Club asked for 20 CC-HOOD-NAVY, size M, with a bulk discount. Inventory found only 8 on hand -- a 12-unit shortfall no tool can fabricate away -- and computed that a 25%-off price ($43.50) clears the shop's 1.3x-unit-cost floor ($28.60), so the discount itself is policy-compliant. But the quantity gap is a real-world business decision (accept 8 now? wait for restock? decline?) outside any agent's authority or any tool this system has, so Boss confirmed the numbers and left the ticket at needs_approval, asking the requester to revise the quantity to 8 or fewer or propose a specific, policy-compliant price.",
+    "agent_contributions": {
+      "boss": "Delegated the ticket to Inventory. When Inventory escalated the quantity shortfall, independently re-verified the stock count and pricing, confirmed Inventory's math, and closed the ticket with a clear ask back to the requester rather than inventing a resolution.",
+      "inventory": "Verified on-hand stock (8, vs. 20 requested) and pricing (unit cost $22.00, list $58.00), computed the maximum allowed discount (25% off, floor of 1.3x cost), and escalated to Boss rather than silently shrinking the order or approving a bigger discount than policy allows.",
+      "accounting": null,
+      "facilities": null,
+      "customer_service": null
+    },
+    "human_approval": {
+      "required": false,
+      "reason": "This isn't a cash payment -- it's a quantity/pricing judgment call the dashboard's Approve flow has no mechanism for. No proposal of any kind was created."
+    },
+    "cash_impact_usd": 0.0,
+    "runs": ["run-9398b9d8"],
+    "note": "Left honestly at needs_approval rather than forced to a fake 'resolved' -- the team correctly identified it lacks the authority (and the shop lacks the inventory) to fully close this ticket on its own. See the Problem 10 reflection for what tooling would actually unblock it."
+  }
+]

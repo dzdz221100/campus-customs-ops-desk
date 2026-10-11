@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Campus Customs — Desk Tickets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --bg: #efe8d8;
+    --panel: #fffdf7;
+    --panel-soft: #faf5e9;
+    --ink: #241f18;
+    --ink-soft: #6b6153;
+    --line: #ddd0ab;
+    --yale: #00356b;
+    --yale-dark: #00264d;
+    --brass: #b8893b;
+    --brass-light: #e4c488;
+    --green: #2e7d4f;
+    --green-bg: #e7f3ea;
+    --amber: #a3691b;
+    --amber-bg: #fbeedd;
+    --red: #a23b3b;
+    --red-bg: #fbe9e7;
+    --radius: 14px;
+    --shadow-card: 0 2px 6px rgba(36, 31, 24, 0.12), 0 10px 24px rgba(36, 31, 24, 0.08);
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --agent-boss: #00356b;
+    --agent-inventory: #a3691b;
+    --agent-accounting: #2e7d4f;
+    --agent-facilities: #6b4a2f;
+    --agent-customer_service: #b23a6b;
+    --agent-human: #3a3a3a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 15% 0%, rgba(184, 137, 59, 0.08), transparent 45%),
+      radial-gradient(circle at 100% 10%, rgba(0, 53, 107, 0.07), transparent 50%),
+      repeating-linear-gradient(135deg, rgba(0,0,0,0.035) 0 1px, transparent 1px 3px),
+      var(--bg);
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(180deg, var(--yale) 0%, var(--yale-dark) 100%);
+    color: #f5f0e3;
+    padding: 26px 32px 20px;
+    border-bottom: 3px solid var(--brass);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+  }
+  header h1 { margin: 0 0 6px; font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; letter-spacing: 0.2px; }
+  header p { margin: 0; opacity: 0.85; font-size: 0.92rem; max-width: 760px; line-height: 1.5; }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 14px 24px 0;
+    background: transparent;
+    border-bottom: 2px solid var(--yale);
+  }
+  .tab-btn {
+    border: 1px solid var(--line);
+    border-bottom: none;
+    background: var(--panel-soft);
+    color: var(--yale);
+    font-family: var(--font-body);
+    padding: 10px 20px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .tab-btn.active { background: var(--panel); color: var(--yale-dark); position: relative; top: 2px; border-color: var(--yale); box-shadow: 0 -2px 0 var(--brass) inset; }
+  .tab-btn:hover { background: #f1e9d6; }
+  main { max-width: 920px; margin: 0 auto; padding: 28px 24px 70px; }
+  .tab-panel { display: none; animation: fade 0.18s ease-in; }
+  .tab-panel.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+
+  .ticket-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 6px solid var(--brass);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-card);
+  }
+  .ticket-card h2 { margin: 0 0 6px; color: var(--yale-dark); font-family: var(--font-display); font-size: 1.35rem; }
+  .ticket-meta { font-size: 0.9rem; color: var(--ink-soft); }
+  .ticket-meta b { color: var(--ink); }
+  .fact-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.9rem; }
+  .fact-table td { padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .fact-table td:first-child { color: var(--ink-soft); width: 170px; font-weight: 600; }
+
+  section.block {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-card);
+  }
+  section.block h3 {
+    margin-top: 0;
+    color: var(--yale-dark);
+    font-family: var(--font-display);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.15rem;
+  }
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 11px;
+    border-radius: 999px;
+  }
+  .badge.expected { background: #e6f0ff; color: var(--yale); }
+  .badge.pending { background: var(--amber-bg); color: var(--amber); }
+  .badge.resolved { background: var(--green-bg); color: var(--green); }
+
+  h4 {
+    margin: 18px 0 8px;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--brass);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  h4:first-of-type { margin-top: 4px; }
+  p { line-height: 1.6; font-size: 0.95rem; }
+  ol, ul { margin: 4px 0; padding-left: 24px; line-height: 1.6; }
+  li { margin-bottom: 6px; font-size: 0.95rem; }
+  code {
+    background: var(--panel-soft);
+    border: 1px solid var(--line);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--yale-dark);
+  }
+
+  /* agent chips + chain diagrams */
+  .agent-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 12px 4px 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .agent-chip .dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.72rem;
+    flex: none;
+  }
+  .agent-chip.agent-boss .dot { background: var(--agent-boss); }
+  .agent-chip.agent-inventory .dot { background: var(--agent-inventory); }
+  .agent-chip.agent-accounting .dot { background: var(--agent-accounting); }
+  .agent-chip.agent-facilities .dot { background: var(--agent-facilities); }
+  .agent-chip.agent-customer_service .dot { background: var(--agent-customer_service); }
+  .agent-chip.agent-human .dot { background: var(--agent-human); }
+  .agent-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 14px; }
+
+  .chain {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 16px;
+    padding: 12px 14px;
+    background: var(--panel-soft);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+  }
+  .chain .chain-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-soft);
+    font-weight: 700;
+    margin-right: 4px;
+  }
+  .chain-arrow { color: var(--brass); font-weight: 700; font-size: 1.05rem; }
+  .chain-arrow.maybe { color: var(--amber); font-style: italic; font-size: 0.78rem; font-weight: 600; }
+
+  .placeholder {
+    border: 1.5px dashed var(--line);
+    border-radius: 8px;
+    padding: 16px;
+    color: var(--ink-soft);
+    font-style: italic;
+    text-align: center;
+  }
+  .coming-later { text-align: center; padding: 50px 20px; color: var(--ink-soft); }
+  .coming-later h2 { color: var(--yale-dark); font-style: normal; font-family: var(--font-display); }
+
+  /* cash stat tiles */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 6px 0 4px; }
+  .stat-tile {
+    background: var(--panel-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .stat-tile .stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--ink-soft); margin-bottom: 6px; }
+  .stat-tile .stat-value { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 500; color: var(--yale-dark); }
+  .stat-tile.negative .stat-value { color: var(--red); }
+  .stat-tile.positive .stat-value { color: var(--green); }
+  .stat-tile .stat-sub { font-size: 0.74rem; color: var(--ink-soft); margin-top: 4px; }
+
+  .note-callout {
+    background: var(--panel-soft);
+    border-left: 3px solid var(--brass);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🐾 Campus Customs — Desk Tickets</h1>
+  <p>Problem 6 plan (Expected) + Problem 9 results (Actual, Cash). One tab per ticket (101 / 102 / 103), plus Cash; Reflection is Problem 10.</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="t101">🎫 Ticket 101</button>
+  <button class="tab-btn" data-tab="t102">🏠 Ticket 102</button>
+  <button class="tab-btn" data-tab="t103">🏷️ Ticket 103</button>
+  <button class="tab-btn" data-tab="cash">💵 Cash</button>
+  <button class="tab-btn" data-tab="reflection">🪞 Reflection</button>
+</div>
+
+<main>
+
+  <!-- ===================== TICKET 101 ===================== -->
+  <section id="t101" class="tab-panel active">
+    <div class="ticket-card">
+      <h2>Ticket 101 — customer_order</h2>
+      <div class="ticket-meta">Requester: <b>Tauhid Zaman</b> · "Needs a tee in size S."</div>
+      <table class="fact-table">
+        <tr><td>Item requested</td><td><code>CC-TEE-WHITE</code>, size S, qty 1</td></tr>
+        <tr><td>Linked invoice</td><td><code>invoice_id = 501</code></td></tr>
+        <tr><td>Known from Problem 2 study</td><td>Stock at 0 for this SKU/size; invoice 501 is an $840 open, overdue (due 2026-08-28) rush reprint from Bulldog Print Co</td></tr>
+      </table>
+    </div>
+
+    <section class="block">
+      <h3>🧭 Expected <span class="badge expected">before the agents run</span></h3>
+
+      <h4>Who Boss should call first, and why</h4>
+      <p><b>Customer Service.</b> This is a <code>customer_order</code> ticket — a customer-facing stock request — which is squarely Customer Service's lane per the shop's routing rule. Boss shouldn't touch inventory or payment facts directly on a ticket that's fundamentally "can we fill this order," at least not until Customer Service has actually looked.</p>
+
+      <h4>Expected delegation chain (not "everyone")</h4>
+      <div class="chain">
+        <span class="chain-label">Predicted:</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-customer_service"><span class="dot">B</span>Customer Service</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-accounting"><span class="dot">L</span>Accounting</span>
+        <span class="chain-arrow maybe">→ Boss? (may stall here)</span>
+      </div>
+      <ol>
+        <li><b>Boss → Customer Service.</b> Customer Service checks the order and finds stock is 0, then checks the linked invoice/vendor to see if a restock is already moving.</li>
+        <li><b>Customer Service → Accounting.</b> Since invoice 501 ($840) is still open/unpaid, Customer Service can't give the customer a timeline — it hands the payment question to Accounting rather than calling <code>approve_payment</code> itself (that tool is Accounting-only by design).</li>
+        <li><b>Accounting → Boss (expected, may stall).</b> $840 is over Accounting's $500 self-approval ceiling, so Accounting should try to escalate to Boss for sign-off before paying. <i>I expect this exact hop to be the interesting one</i> — Boss → Customer Service → Accounting → Boss is a 3-hop chain, and our own delegation-depth cap (<code>MAX_DELEGATION_DEPTH = 2</code>, set in Problem 5) may block the third hop. If it does, I expect the ticket to land on <code>needs_approval</code> rather than get a full resolution in one pass — that would be the safety limit working as intended, not a bug.</li>
+      </ol>
+      <p>I do <i>not</i> expect Facilities or Inventory to be involved in this ticket at all — there's no lease or pricing question here.</p>
+
+      <h4>Expected MCP tools used</h4>
+      <ul>
+        <li><code>get_ticket(101)</code> — Customer Service, full request detail</li>
+        <li><code>check_inventory_stock("CC-TEE-WHITE", "S")</code> — Customer Service, confirms 0 stock</li>
+        <li><code>get_invoice(501)</code> — Customer Service (then re-checked by Accounting), confirms open/$840/overdue</li>
+        <li><code>get_vendor(1)</code> — Customer Service, Bulldog Print Co's lead time, for an honest (non-)timeline</li>
+        <li><code>get_today()</code> — Customer Service, to judge "overdue" against the shop's actual date</li>
+        <li><code>get_cash_balance("checking")</code> — Accounting, before deciding whether it can self-approve</li>
+        <li><code>update_ticket_status(101, ...)</code> — whoever ends up closing it out, most likely <code>needs_approval</code></li>
+      </ul>
+      <p>I do not expect <code>approve_payment</code> to actually fire in this run — $840 should not clear Accounting's own ceiling.</p>
+    </section>
+
+    <section class="block">
+      <h3>🎬 Actual <span class="badge resolved">resolved — Problem 9</span></h3>
+
+      <h4>What actually happened (2 runs)</h4>
+      <div class="chain">
+        <span class="chain-label">Pass 1:</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-customer_service"><span class="dot">B</span>Customer Service</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-accounting"><span class="dot">L</span>Accounting</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss (sign-off)</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-accounting"><span class="dot">L</span>Accounting (prepares $840)</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-human"><span class="dot">Y</span>Human approves</span>
+      </div>
+      <div class="chain">
+        <span class="chain-label">Pass 2:</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-customer_service"><span class="dot">B</span>Customer Service (closes resolved)</span>
+      </div>
+      <p><b>Boss called Customer Service first</b> — exactly as predicted. <b>Pass 1:</b> Customer Service verified 0 on-hand stock, found invoice #501 still open/unpaid and overdue, and delegated to Accounting instead of promising a date. Accounting verified the invoice and the checking balance ($3,400), then — since $840 is over its $500 self-approval ceiling — looped in Boss for a sanity check. <b>The 3-hop chain Boss → Customer Service → Accounting → Boss did complete</b> (after raising <code>MAX_DELEGATION_DEPTH</code> from 2 to 3 — see note below), Boss confirmed the numbers checked out, and Accounting called <code>propose_payment</code> to prepare the $840 payment for human review. A human (me, via the dashboard) approved it: <b>checking dropped from $3,400.00 to $2,560.00</b> and invoice #501 was marked paid. <b>Pass 2:</b> re-running the ticket, Customer Service saw the invoice was now paid and closed the ticket <code>resolved</code>, quoting Bulldog Print Co's real 5-day lead time instead of inventing a date.</p>
+
+      <h4>Expected vs. actual</h4>
+      <ul>
+        <li><b>Matched:</b> Boss → Customer Service first; the 3-hop escalation chain being "the interesting part" (predicted exactly); no Facilities/Inventory involvement; no promised delivery date.</li>
+        <li><b>Didn't match:</b> I predicted the depth cap (2, at the time) would <i>block</i> the third hop and leave the ticket stuck. It did block it on my first live attempt — then I raised the cap to 3 (a deliberate, documented fix, not a workaround of the result) because 3 is a real business process, not a runaway loop. With that fix, the full chain completed in one pass instead of stalling.</li>
+        <li><b>Surprise:</b> Boss's own final <code>overall_summary</code> on pass 1 said <i>"no payment was prepared and no funds moved"</i> — which was flatly wrong. A real proposal (#1, $840) had already been created by Accounting earlier in that same run. I only know this because I checked <code>GET /api/payments/proposals</code> directly instead of trusting the agent's prose. Lesson: verify agent claims against the database/API, every time — exactly the discipline this whole project has tried to build in.</li>
+      </ul>
+
+      <h4>👥 Agents that actually worked this ticket</h4>
+      <div class="agent-row">
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="agent-chip agent-customer_service"><span class="dot">B</span>Customer Service</span>
+        <span class="agent-chip agent-accounting"><span class="dot">L</span>Accounting</span>
+        <span class="agent-chip agent-human"><span class="dot">Y</span>Human (approval)</span>
+      </div>
+      <p style="font-size:0.85rem;color:var(--ink-soft);">Facilities and Inventory were correctly never involved, matching the prediction.</p>
+
+      <h4>🔧 Tools actually used</h4>
+      <p><code>get_ticket</code>, <code>check_inventory_stock</code>, <code>get_invoice</code>, <code>get_vendor</code>, <code>get_today</code>, <code>get_cash_balance</code>, <code>delegate_to_customer_service</code>, <code>delegate_to_accounting</code>, <code>delegate_to_boss</code>, <code>propose_payment</code>, <code>update_ticket_status</code> — plus the human-only <code>resolve_payment_proposal</code>, called from the dashboard's Approve button, not by any agent.</p>
+    </section>
+  </section>
+
+  <!-- ===================== TICKET 102 ===================== -->
+  <section id="t102" class="tab-panel">
+    <div class="ticket-card">
+      <h2>Ticket 102 — rent_notice</h2>
+      <div class="ticket-meta">Requester: <b>Elm City Properties</b> · "Email: shop rent due in 2 days."</div>
+      <table class="fact-table">
+        <tr><td>Linked lease</td><td><code>lease_id = 1</code> (Chapel Street shop)</td></tr>
+        <tr><td>Known from Problem 2 study</td><td>Monthly rent $2,400, <code>next_due = 2026-09-02</code>, desk date_today = 2026-08-31 — the "2 days" claim lines up exactly; checking balance is $3,400</td></tr>
+      </table>
+    </div>
+
+    <section class="block">
+      <h3>🧭 Expected <span class="badge expected">before the agents run</span></h3>
+
+      <h4>Who Boss should call first, and why</h4>
+      <p><b>Facilities.</b> This is a <code>rent_notice</code> — lease/landlord matters are Facilities' lane, not a customer or pricing issue.</p>
+
+      <h4>Expected delegation chain (not "everyone")</h4>
+      <div class="chain">
+        <span class="chain-label">Predicted:</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-facilities"><span class="dot">S</span>Facilities</span>
+        <span class="chain-arrow" style="font-style:italic;font-size:0.78rem;">→ done (one hop)</span>
+      </div>
+      <ol>
+        <li><b>Boss → Facilities, and that's it.</b> Facilities checks the real lease record against the landlord's claim. Since <code>next_due</code> (2026-09-02) is genuinely 2 days out from today (2026-08-31) — rent isn't due <i>yet</i> — I don't expect Facilities to need to pay anything this run, which means it has no real reason to delegate to Accounting. I expect this to resolve as a single hop: Boss → Facilities → done.</li>
+      </ol>
+      <p>If I'm wrong and Facilities decides the notice warrants paying now (e.g. to avoid being late given review timing), I'd expect exactly one further hop, Facilities → Accounting, and no more than that — never back-and-forth, never looping in Inventory or Customer Service, who have nothing to do with a lease.</p>
+
+      <h4>Expected MCP tools used</h4>
+      <ul>
+        <li><code>get_ticket(102)</code> — Facilities, to see the raw notice</li>
+        <li><code>get_today()</code> — Facilities, to know what "today" actually is</li>
+        <li><code>get_lease_status(1)</code> — Facilities, to verify the claimed amount/date against the real lease</li>
+        <li><code>update_ticket_status(102, ...)</code> — Facilities, closing the ticket as verified (and, if my prediction above is right, not yet paid)</li>
+      </ul>
+      <p>I do not expect <code>get_cash_balance</code> or <code>approve_payment</code> to be called this run, since I don't expect a payment to actually be due yet.</p>
+    </section>
+
+    <section class="block">
+      <h3>🎬 Actual <span class="badge resolved">resolved — Problem 9</span></h3>
+
+      <h4>What actually happened (1 run)</h4>
+      <div class="chain">
+        <span class="chain-label">Actual:</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-facilities"><span class="dot">S</span>Facilities (closes resolved)</span>
+      </div>
+      <p>Boss delegated straight to Facilities — exactly as predicted, and it resolved in a single hop with no back-and-forth. Facilities called <code>get_ticket</code>, <code>get_today</code> (desk date 2026-08-31), and <code>get_lease_status(1)</code>: real rent is $2,400/month, <code>next_due = 2026-09-02</code> — genuinely 2 days out, so the landlord's notice was accurate but nothing is due <i>today</i>. No payment was prepared. Facilities closed the ticket <code>resolved</code> with those exact numbers in the note.</p>
+
+      <h4>Expected vs. actual</h4>
+      <ul>
+        <li><b>Matched:</b> single hop (Boss → Facilities, done); the notice checking out but not triggering a payment; no Accounting/Inventory/Customer Service involvement.</li>
+        <li><b>Didn't match:</b> I predicted <code>get_cash_balance</code> would <i>not</i> be called since I expected no payment question to come up at all. Facilities called it anyway — a harmless extra verification step, not a mistake, but a genuine small miss in my prediction (see the Problem 10 reflection for what this says about how cautious Facilities' prompt turned out to be in practice).</li>
+      </ul>
+
+      <h4>👥 Agents that actually worked this ticket</h4>
+      <div class="agent-row">
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="agent-chip agent-facilities"><span class="dot">S</span>Facilities</span>
+      </div>
+      <p style="font-size:0.85rem;color:var(--ink-soft);">Accounting, Inventory, and Customer Service were correctly never involved.</p>
+
+      <h4>🔧 Tools actually used</h4>
+      <p><code>get_ticket</code>, <code>get_today</code>, <code>get_lease_status</code>, <code>get_cash_balance</code>, <code>delegate_to_facilities</code>, <code>update_ticket_status</code>.</p>
+    </section>
+  </section>
+
+  <!-- ===================== TICKET 103 ===================== -->
+  <section id="t103" class="tab-panel">
+    <div class="ticket-card">
+      <h2>Ticket 103 — price_override</h2>
+      <div class="ticket-meta">Requester: <b>Yale AI Club</b> · "Student org wants 20 hoodies, size M, asking for a bulk discount."</div>
+      <table class="fact-table">
+        <tr><td>Item requested</td><td><code>CC-HOOD-NAVY</code>, size M, qty 20</td></tr>
+        <tr><td>Known from Problem 2 study</td><td>Only 8 units of that SKU/size in stock (Aisle A) — 12 short of the ask. Unit cost $22.00, list price $58.00.</td></tr>
+      </table>
+    </div>
+
+    <section class="block">
+      <h3>🧭 Expected <span class="badge expected">before the agents run</span></h3>
+
+      <h4>Who Boss should call first, and why</h4>
+      <p><b>Inventory.</b> This is a <code>price_override</code> on a specific SKU — stock and pricing decisions belong to Inventory, not Accounting (a discount isn't a cash payment out of the till) and not Customer Service (the requester is a student org placing a bulk order, not a walk-in individual order).</p>
+
+      <h4>Expected delegation chain (not "everyone")</h4>
+      <div class="chain">
+        <span class="chain-label">Predicted:</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-inventory"><span class="dot">Q</span>Inventory</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss (shortfall decision)</span>
+      </div>
+      <ol>
+        <li><b>Boss → Inventory.</b> Inventory checks stock and pricing itself — it has both tools it needs (<code>check_inventory_stock</code>, <code>get_pricing</code>) without involving anyone else.</li>
+        <li><b>Inventory → Boss (expected).</b> Since only 8 of the requested 20 are in stock, Inventory's own rules don't let it silently shrink the order or invent stock — I expect it to escalate the quantity shortfall back to Boss for a decision (ship partial now? wait for restock? decline?), even though the discount math itself (25% off = $43.50, above the $28.60 floor) is well within Inventory's own authority to approve.</li>
+      </ol>
+      <p>I do not expect Accounting, Facilities, or Customer Service to be involved in this ticket at all — there's no cash payment, no lease, and no individual customer order here.</p>
+
+      <h4>Expected MCP tools used</h4>
+      <ul>
+        <li><code>get_ticket(103)</code> — Inventory, full request (sku/size/qty/requester)</li>
+        <li><code>check_inventory_stock("CC-HOOD-NAVY", "M")</code> — Inventory, finds the 8-vs-20 shortfall</li>
+        <li><code>get_pricing("CC-HOOD-NAVY")</code> — Inventory, unit cost/list price for the discount math</li>
+        <li><code>update_ticket_status(103, ...)</code> — most likely <code>needs_approval</code>, citing the shortfall</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h3>🎬 Actual <span class="badge pending">needs_approval — Problem 9</span></h3>
+
+      <h4>What actually happened (1 run)</h4>
+      <div class="chain">
+        <span class="chain-label">Actual:</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-inventory"><span class="dot">Q</span>Inventory</span>
+        <span class="chain-arrow">→</span>
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss (confirms, leaves open)</span>
+      </div>
+      <p>Boss delegated to Inventory — exactly as predicted. Inventory called <code>get_ticket</code>, <code>check_inventory_stock("CC-HOOD-NAVY","M")</code> (8 on hand, Aisle A — a 12-unit shortfall against the requested 20), and <code>get_pricing("CC-HOOD-NAVY")</code> ($22.00 cost / $58.00 list). A 25%-off price ($43.50) clears the 1.3x-cost floor ($28.60), so the <i>discount itself</i> was within Inventory's own authority — but the quantity shortfall is not something Inventory (or anyone) can resolve by itself, so it escalated to Boss via <code>delegate_to_boss</code> instead of silently shrinking the order. Boss independently re-verified the stock count and pricing, confirmed Inventory's numbers, and closed the ticket <code>needs_approval</code> with a specific ask: the requester must revise the order to 8 or fewer units, or propose a specific price at or above $43.50.</p>
+
+      <h4>Expected vs. actual</h4>
+      <ul>
+        <li><b>Matched, precisely:</b> this ticket's actual delegation chain (Boss → Inventory → Boss) is exactly what I predicted, down to the reason (quantity shortfall, not the discount math, is what forced the escalation).</li>
+        <li><b>Didn't match:</b> none worth flagging — this was the cleanest match between plan and reality of all three tickets.</li>
+        <li><b>Still open on purpose:</b> unlike 101 and 102, this ticket did <i>not</i> reach a final "resolved" state, and I didn't force one. The blocker (not enough physical stock) isn't a decision an agent can make correctly on its own — accepting a smaller order, waiting for a restock, or declining are all real business calls for a human, and there's no "accept partial order" action anywhere in this system (the dashboard's only human-approval mechanism is for payments). Forcing a fake resolution here would have been worse than being honest about the limit.</li>
+      </ul>
+
+      <h4>👥 Agents that actually worked this ticket</h4>
+      <div class="agent-row">
+        <span class="agent-chip agent-boss"><span class="dot">D</span>Boss</span>
+        <span class="agent-chip agent-inventory"><span class="dot">Q</span>Inventory</span>
+      </div>
+      <p style="font-size:0.85rem;color:var(--ink-soft);">Accounting, Facilities, and Customer Service were correctly never involved.</p>
+
+      <h4>🔧 Tools actually used</h4>
+      <p><code>get_ticket</code>, <code>check_inventory_stock</code>, <code>get_pricing</code>, <code>delegate_to_inventory</code>, <code>delegate_to_boss</code>, <code>update_ticket_status</code>.</p>
+    </section>
+  </section>
+
+  <!-- ===================== CASH ===================== -->
+  <section id="cash" class="tab-panel">
+    <div class="ticket-card">
+      <h2>💵 Cash — Problem 9</h2>
+      <div class="ticket-meta">Working database reset to original values before this run. All figures below are read directly from <code>cash_accounts</code> / <code>payments</code> / <code>invoices</code> in <code>data/campus_customs_new.db</code>, not estimated.</div>
+    </div>
+
+    <section class="block">
+      <h3>💰 Balance, start to end</h3>
+      <div class="stat-row">
+        <div class="stat-tile">
+          <div class="stat-label">Starting balance</div>
+          <div class="stat-value">$3,400.00</div>
+          <div class="stat-sub">2026-08-31, right after reset</div>
+        </div>
+        <div class="stat-tile negative">
+          <div class="stat-label">Net change</div>
+          <div class="stat-value">&minus;$840.00</div>
+          <div class="stat-sub">Ticket 101 only</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Ending balance</div>
+          <div class="stat-value">$2,560.00</div>
+          <div class="stat-sub">Matches <code>cash_accounts</code> exactly</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h3>🧾 Itemized changes, per ticket</h3>
+      <table class="fact-table">
+        <tr><td><b>Ticket 101</b></td><td><b style="color:var(--red);">&minus;$840.00</b> — invoice #501 to Bulldog Print Co (rush reprint of <code>CC-TEE-WHITE</code> S), prepared by Accounting as payment proposal #1, approved by a human on the dashboard. Payment row: <code>payments.id=1</code>, <code>kind=invoice</code>, <code>ref_id=501</code>, <code>amount=840.0</code>, <code>account=checking</code>.</td></tr>
+        <tr><td><b>Ticket 102</b></td><td><b>$0.00</b> — rent notice verified accurate (lease #1, $2,400/mo, due 2026-09-02), but not due <i>today</i> (2026-08-31), so no payment was prepared or made.</td></tr>
+        <tr><td><b>Ticket 103</b></td><td><b>$0.00</b> — a pricing/quantity decision, not a cash payment. No proposal of any kind was created.</td></tr>
+      </table>
+      <div class="note-callout">Verified three independent ways: <code>GET /api/cash</code>, a direct <code>sqlite3</code> query on <code>cash_accounts</code> (<code>checking | 2560.0</code>), and the single matching row in <code>payments</code>.</div>
+    </section>
+  </section>
+
+  <!-- ===================== REFLECTION ===================== -->
+  <section id="reflection" class="tab-panel">
+    <div class="ticket-card">
+      <h2>🪞 Reflection — Problem 10</h2>
+      <div class="ticket-meta">Written from the real Problem 9 run (desk_tickets.html's own Actual sections, <code>output/resolved_tickets.json</code>, and the audit trail) — not a generic write-up.</div>
+    </div>
+
+    <section class="block">
+      <h3>🔁 1. Expected vs. actual, ticket by ticket</h3>
+
+      <h4>Ticket 101 — matched the shape, needed a real fix to finish</h4>
+      <p>I predicted Boss → Customer Service → Accounting → Boss, flagged the 3rd hop as "the interesting part," and guessed the old depth cap (2) might block it, leaving the ticket stuck at <code>needs_approval</code>. All of that happened on my very first live attempt. But I didn't stop there and call it "prediction confirmed" — I treated the stall as a real bug, not an acceptable outcome, because the 3-hop chain is a legitimate business process (a sign-off round trip), not a runaway loop. I raised <code>MAX_DELEGATION_DEPTH</code> to 3 and clarified <code>boss.md</code>/<code>accounting.md</code>'s wording (Boss was reading "sign-off before Accounting pays" as authorizing the money itself, so he kept declining to clear even verified, in-policy payments). With that fixed, the chain completed, a proposal was prepared, I approved it as the human, and a second run closed the ticket <code>resolved</code>. Net: the <i>prediction</i> about where the friction would be was exactly right; the <i>system</i> needed a real change to actually deliver the outcome the prediction assumed was possible.</p>
+
+      <h4>Ticket 102 — the cleanest resolution, one honest miss</h4>
+      <p>Predicted a single hop, Boss → Facilities, no payment, and specifically predicted <code>get_cash_balance</code> would <i>not</i> be called since no payment question should come up. Everything else matched exactly, but Facilities called <code>get_cash_balance</code> anyway — a small, harmless extra verification step I didn't predict. It's a good example of the model being slightly more cautious than strictly necessary rather than cutting corners, which is the safer direction to be wrong in.</p>
+
+      <h4>Ticket 103 — the single best match of the three</h4>
+      <p>Predicted Boss → Inventory → Boss, discount math within Inventory's own authority, but the 8-vs-20 quantity shortfall forcing an escalation Inventory can't resolve alone. That is <i>exactly</i> what happened, including the specific reason for the escalation. This is also the one ticket I deliberately did not force to a fake "resolved" — the real blocker (not enough physical stock) isn't something any agent in this system has the tools or the authority to fix, and pretending otherwise would have been worse than an honest <code>needs_approval</code>.</p>
+    </section>
+
+    <section class="block">
+      <h3>📊 2. How well did the agents perform, and why</h3>
+      <p><b>Strong, reliably, on narrow judgment with real numbers in front of them.</b> Across all three tickets and ~65 real audit events: routing was 3-for-3 correct (every ticket went to the right first specialist per its <code>type</code>); every dollar and percentage calculation checked out exactly against the database (the $43.50 floor on ticket 103, the $500/$2,060-above-reserve math on ticket 101); and separation of duties held with zero violations — no agent other than Accounting ever attempted to move money, and even Accounting never executed a payment directly (it structurally <i>can't</i> — <code>resolve_payment_proposal</code> isn't in its toolset).</p>
+      <p><b>Weaker in two specific, important ways.</b> First, Boss's own closing summary on ticket 101's first pass was flatly <i>wrong</i> — it said "no payment was prepared and no funds moved" when Accounting had, in that same run, already created proposal #1. This wasn't a judgment call or a close reading; it was a factual claim contradicted by the system's own database. I only caught it because I checked <code>GET /api/payments/proposals</code> directly instead of trusting the agent's prose — which is exactly the discipline this whole project has tried to build in, and a useful reminder that an agent's own narrative summary is not a trustworthy source of truth about what it actually did. Second, before I clarified the prompts, Boss was <i>too</i> conservative — he would decline to give Accounting a clear go-ahead on a fully verified, in-policy $840 payment, apparently because he was conflating "I sign off" with "the money moves," even though a human was always going to review it independently regardless. That's not a safety win, it's a workflow dead end — an agent being cautious in a way that blocks a legitimate process is still a failure, just a quieter one than paying something it shouldn't have.</p>
+      <p>Smaller inefficiency: in ticket 101's run, <code>get_invoice(501)</code> was called three separate times — once each by Customer Service, Accounting, and Boss — because delegation doesn't carry prior tool results forward, only the text instructions passed into <code>delegate_to_*</code>. Each agent re-derives context from scratch. Harmless for a read-only lookup on a toy dataset, but it's real, measurable waste (see reflection #3).</p>
+    </section>
+
+    <section class="block">
+      <h3>🧩 3. What would have been simpler with one agent and the same tools</h3>
+      <p>A single agent with one system prompt and the full MCP toolset (no delegation, no five personas) would very likely have handled all three of these tickets with <i>less</i> total complexity and cost:</p>
+      <ul>
+        <li><b>No delegation-depth bookkeeping at all.</b> There would be no <code>MAX_DELEGATION_DEPTH</code> to tune, no possibility of a legitimate multi-step decision getting cut off mid-chain the way ticket 101's first attempt was — a single continuous reasoning trace doesn't have "hops" to run out of.</li>
+        <li><b>No redundant context-gathering.</b> One agent calls <code>get_invoice(501)</code> once and keeps the answer in its own context for the rest of the ticket, instead of three different agents each re-fetching it because they don't share conversation history across a delegation boundary.</li>
+        <li><b>One copy of each business rule instead of five.</b> The $500 threshold, the 25%/1.3x discount floor, and the $500 reserve floor are each currently duplicated across <code>boss.md</code>, <code>accounting.md</code>, and <code>inventory.md</code>. When I fixed the sign-off ambiguity, I had to edit <code>boss.md</code> <i>and</i> <code>accounting.md</code> together and keep them consistent — a real maintenance cost a single prompt wouldn't have.</li>
+        <li><b>Fewer total LLM calls and lower latency per ticket</b> — ticket 101's first pass alone involved roughly a dozen tool calls spread across three separate agent contexts; a single agent doing the identical verification would plausibly need well under half that.</li>
+      </ul>
+      <p>What a single agent <i>loses</i>, though, is the architectural guarantee this project cared about: separation of duties. With one agent holding every tool, there's no structural reason it couldn't call a money-moving tool itself — the "only Accounting can even attempt this, and even Accounting can only prepare it" split is a genuine safety property this system has that a single-agent version would have to re-create some other way (e.g. a tool-level allowlist keyed on some notion of "current role," which is really just reinventing agent boundaries from the inside).</p>
+    </section>
+
+    <section class="block">
+      <h3>✅ 4. Three problems this team could solve today, as-is</h3>
+      <ol>
+        <li><b>A customer order for something actually in stock</b> — e.g. 2x Yale Cap (OS; 40 on hand). Customer Service would confirm stock with <code>check_inventory_stock</code> and close it <code>resolved</code> in one hop, no Accounting involvement at all — the same code path that handled ticket 101's stock check, just with a "yes" instead of a "no."</li>
+        <li><b>A rent notice with a wrong number in it</b> — e.g. a landlord email claiming the rent is now $2,500. Facilities already has the exact rule for this (<code>get_lease_status</code> would show $2,400, a mismatch), and <code>facilities.md</code> explicitly tells it to flag the discrepancy and escalate rather than pay the claimed amount — this is a small variation on ticket 102, not a new capability.</li>
+        <li><b>A small, in-policy invoice payment under $500</b> — unlike ticket 101's $840, a sub-$500 invoice wouldn't even need Boss's sign-off per <code>accounting.md</code>'s own threshold; Accounting would verify it and call <code>propose_payment</code> directly, and a human would still approve it on the dashboard before it moved. This is the "happy path" for money that ticket 101 never actually exercised (it was always over the threshold).</li>
+      </ol>
+    </section>
+
+    <section class="block">
+      <h3>🚧 5. Three problems this team could <i>not</i> solve, and what it would take</h3>
+      <ol>
+        <li>
+          <b>Actually resolving ticket 103's shortfall</b> (ship 8 now and backorder 12, place a new restock order, or decline). The team can diagnose this perfectly but has no tool to act on any resolution path.
+          <br /><i>What's needed:</i> a new MCP tool like <code>create_purchase_order(vendor_id, sku, size, qty)</code> (writing a new row somewhere real — an `invoices`-style table — not just a note), and a second kind of human-approval queue on the dashboard beyond payments, since "accept a partial order" is a real business decision a human should make, the same way approving a payment is.
+        </li>
+        <li>
+          <b>Actually telling the customer or landlord anything.</b> Customer Service can compute exactly what Tauhid Zaman should be told, but no agent has a channel to tell him — there's no email/notification tool anywhere in this toolset.
+          <br /><i>What's needed:</i> wiring in something like the <code>send_email</code> tool already built elsewhere in this project (<code>mcp_servers/outlook_mcp_server.py</code>) as a new MCP tool for Customer Service/Facilities, plus — consistent with how payments work now — a human-approval step before any real email actually goes out, since sending the wrong message to a real customer is just as consequential as an unapproved payment.
+        </li>
+        <li>
+          <b>A ticket about a brand-new vendor or a product never sold before.</b> Every tool in this system assumes the vendor/SKU already exists in <code>vendors</code>/<code>inventory</code>/<code>pricing</code>. Correctly, the agents would refuse to invent data about something not in the database rather than guess — but there's also no path for them to <i>properly</i> onboard a new vendor or product, since no <code>create_vendor</code>/<code>add_sku</code> tools exist.
+          <br /><i>What's needed:</i> a catalog-management tool set (<code>create_vendor</code>, <code>add_sku_to_catalog</code>), almost certainly behind another human-approval gate, and arguably a sixth agent ("Buyer" or "Merchandising") whose job is new-product/vendor onboarding — a different kind of work than triaging existing tickets, which is all the current five agents are built for.
+        </li>
+      </ol>
+    </section>
+  </section>
+
+</main>
+
+<script>
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.tab).classList.add("active");
+    });
+  });
+</script>
+
+</body>
+</html>

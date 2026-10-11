@@ -1,0 +1,73 @@
+[
+  {
+    "ticket": 101,
+    "prompt": "A customer (Tauhid Zaman) is asking for a white bulldog tee, size S -- do we actually have that in stock?",
+    "tool": "check_inventory_stock",
+    "arguments": {
+      "sku": "CC-TEE-WHITE",
+      "size": "S"
+    },
+    "tool_output": {
+      "found": true,
+      "sku": "CC-TEE-WHITE",
+      "name": "Classic Bulldog Tee",
+      "size": "S",
+      "qty": 0,
+      "location": "Aisle B"
+    },
+    "matches_db_directly": true,
+    "db_row_checked_against": {
+      "sku": "CC-TEE-WHITE",
+      "name": "Classic Bulldog Tee",
+      "size": "S",
+      "qty": 0,
+      "location": "Aisle B"
+    }
+  },
+  {
+    "ticket": 102,
+    "prompt": "Elm City Properties says rent is due in 2 days on the Chapel Street lease -- what does our own lease record say the amount and due date actually are?",
+    "tool": "get_lease_status",
+    "arguments": {
+      "lease_id": 1
+    },
+    "tool_output": {
+      "found": true,
+      "id": 1,
+      "space_name": "Chapel Street shop",
+      "landlord": "Elm City Properties",
+      "monthly_rent": 2400.0,
+      "next_due": "2026-09-02",
+      "notes": null
+    },
+    "matches_db_directly": true,
+    "db_row_checked_against": {
+      "id": 1,
+      "space_name": "Chapel Street shop",
+      "landlord": "Elm City Properties",
+      "monthly_rent": 2400.0,
+      "next_due": "2026-09-02",
+      "notes": null
+    }
+  },
+  {
+    "ticket": 103,
+    "prompt": "The Yale AI Club wants a bulk discount on 20 navy hoodies -- what's our unit cost and list price on that SKU so we can judge the margin?",
+    "tool": "get_pricing",
+    "arguments": {
+      "sku": "CC-HOOD-NAVY"
+    },
+    "tool_output": {
+      "found": true,
+      "sku": "CC-HOOD-NAVY",
+      "unit_cost": 22.0,
+      "list_price": 58.0
+    },
+    "matches_db_directly": true,
+    "db_row_checked_against": {
+      "sku": "CC-HOOD-NAVY",
+      "unit_cost": 22.0,
+      "list_price": 58.0
+    }
+  }
+]

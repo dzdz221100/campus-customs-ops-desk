@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Campus Customs — Resolved Board (Problem 9)</title>
+<style>
+  :root {
+    --yale: #00356b;
+    --yale-dark: #00264d;
+    --paper: #efe8d8;
+    --panel: #fffdf7;
+    --ink: #241f18;
+    --ink-soft: #6b6153;
+    --brass: #b8893b;
+    --green: #2e7d4f;
+    --green-bg: #e7f3ea;
+    --amber: #a3691b;
+    --amber-bg: #fbeedd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  header {
+    background: linear-gradient(180deg, var(--yale), var(--yale-dark));
+    color: #f5f0e3;
+    padding: 26px 32px 20px;
+    border-bottom: 3px solid var(--brass);
+  }
+  header h1 { margin: 0 0 4px; font-size: 1.5rem; }
+  header p { margin: 0; opacity: 0.85; font-size: 0.92rem; }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
+  .cash-strip {
+    display: flex;
+    justify-content: space-between;
+    background: var(--panel);
+    border: 1px solid #ddd0ab;
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    font-size: 0.95rem;
+  }
+  .cash-strip b { color: var(--yale); }
+  .ticket-block {
+    background: var(--panel);
+    border: 1px solid #ddd0ab;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 6px rgba(36,31,24,0.08);
+  }
+  .ticket-block h2 {
+    margin: 0 0 4px;
+    color: var(--yale-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .badge.resolved { background: var(--green-bg); color: var(--green); }
+  .badge.needs_approval { background: var(--amber-bg); color: var(--amber); }
+  .outcome { font-size: 0.92rem; line-height: 1.55; margin: 10px 0 16px; color: var(--ink); }
+  .screenshot-wrap {
+    border: 1px solid #ddd0ab;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(36,31,24,0.12);
+  }
+  .screenshot-wrap img { display: block; width: 100%; height: auto; }
+  .caption { font-size: 0.78rem; color: var(--ink-soft); margin-top: 8px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🐾 Campus Customs — Resolved Board</h1>
+  <p>Problem 9: screenshots of the live React dashboard after running all three tickets end to end.</p>
+</header>
+
+<main>
+  <div class="cash-strip">
+    <span>Starting checking balance: <b>$3,400.00</b></span>
+    <span>Ending checking balance: <b>$2,560.00</b></span>
+    <span>Net change: <b>&minus;$840.00</b> (ticket 101's invoice, human-approved)</span>
+  </div>
+
+  <div class="ticket-block">
+    <h2>Ticket #101 — Bulldog tee <span class="badge resolved">resolved</span></h2>
+    <p class="outcome">Size-S tee was out of stock; invoice #501 ($840, overdue) blocked the restock. Accounting prepared the payment, a human approved it on this board, and Customer Service closed the ticket with an honest vendor-lead-time estimate.</p>
+    <div class="screenshot-wrap">
+      <img src="screenshots/ticket_101.png" alt="Dashboard showing ticket 101 resolved" />
+    </div>
+    <p class="caption">Captured from the live React dashboard (npm run dev) after the real agent run and human approval -- not a mockup.</p>
+  </div>
+
+  <div class="ticket-block">
+    <h2>Ticket #102 — Rent due <span class="badge resolved">resolved</span></h2>
+    <p class="outcome">Facilities verified the landlord's notice against the real lease record. Rent is genuinely due in 2 days, not today, so nothing was paid. Ticket closed as verified.</p>
+    <div class="screenshot-wrap">
+      <img src="screenshots/ticket_102.png" alt="Dashboard showing ticket 102 resolved" />
+    </div>
+    <p class="caption">Captured from the live React dashboard after the real agent run. No payment proposal, no cash change.</p>
+  </div>
+
+  <div class="ticket-block">
+    <h2>Ticket #103 — Bulk hoodie discount <span class="badge needs_approval">needs_approval</span></h2>
+    <p class="outcome">Only 8 of the requested 20 hoodies are in stock -- a real shortfall no tool can invent away. Inventory's discount math was policy-compliant, but the quantity gap needed a human business decision this system doesn't have a mechanism for, so it was honestly left open rather than forced to a fake resolution.</p>
+    <div class="screenshot-wrap">
+      <img src="screenshots/ticket_103.png" alt="Dashboard showing ticket 103 needs approval" />
+    </div>
+    <p class="caption">Captured from the live React dashboard after the real agent run. Still "Filed" (off the open pile) even though not fully resolved -- see output/resolved_tickets.json for why.</p>
+  </div>
+</main>
+
+</body>
+</html>
